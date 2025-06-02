@@ -1,14 +1,17 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  items: [
+  user: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  books: [
     {
-      manga: { type: mongoose.Schema.Types.ObjectId, ref: 'Manga' },
-      quantity: Number,
+      type: mongoose.Types.ObjectId, 
+      ref: 'Books',
     }
   ],
-  totalAmount: Number,
   status: {
     type: String,
     enum: ['processing', 'shipped', 'delivered', 'cancelled'],
