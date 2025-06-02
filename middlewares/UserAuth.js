@@ -8,7 +8,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ message: "Authentication token required" });
     }
 
-    jwt.verify(token, "itachi", (err, user) => {
+    jwt.verify(token, process.env.SECRET_TOKEN, (err, user) => {
         if (err) {
             return res.status(403).json({ message: "Token expired. Please login again" });
         }

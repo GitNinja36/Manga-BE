@@ -74,7 +74,7 @@ const signInController = async (req, res) => {
         // Generate token
         const token = jwt.sign(
             { id: existingUser._id, role: existingUser.role },
-            "itachi",
+            process.env.SECRET_TOKEN,
             { expiresIn: "30D" }
         );
 
