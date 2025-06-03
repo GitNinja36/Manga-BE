@@ -24,8 +24,14 @@ const orderSchema = new mongoose.Schema({
     zip: String,
     country: String,
   },
-  paymentMethod: { type: String, default: 'Cash on Delivery' },
-  createdAt: { type: Date, default: Date.now },
+  paymentMethod: { 
+    type: String, 
+    default: 'Cash on Delivery' 
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
 });
 
 module.exports = mongoose.model('Order', orderSchema);
