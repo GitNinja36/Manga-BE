@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const authRouter = require("../routers/userRouter.js");
-const bookRouter = require("../routers/userRouter.js");
+const bookRouter = require("../routers/bookRouter.js");
 
 const app = express();
 app.use(cors());

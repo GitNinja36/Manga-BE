@@ -23,7 +23,7 @@ const bookSchema = new mongoose.Schema(
   },
   stock: { 
     type: Number, 
-    default: 1 
+    default: 200 
   },
   coverImage: String,
   images: [String],
