@@ -8,7 +8,11 @@ const cartSchema = new mongoose.Schema({
   },
   items: [
     {
-      manga: { type: mongoose.Schema.Types.ObjectId, ref: 'Books' },
+      manga: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Books',
+        required: true,
+      },
       quantity: { type: Number, default: 1 },
     }
   ],

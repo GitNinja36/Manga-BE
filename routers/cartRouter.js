@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/add", authenticateToken, addToCart);
 
 // Get cart items
-router.get("/get", authenticateToken, getCart);
+router.get("/all", authenticateToken, getCart);
 
 // Remove from cart
 router.delete("/remove", authenticateToken, removeFromCart);

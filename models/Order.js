@@ -8,8 +8,9 @@ const orderSchema = new mongoose.Schema({
   },
   books: [
     {
-      type: mongoose.Types.ObjectId, 
-      ref: 'Books',
+      manga: { type: mongoose.Schema.Types.ObjectId, ref: 'Books' },
+      quantity: Number,
+      priceAtPurchase: Number
     }
   ],
   status: {

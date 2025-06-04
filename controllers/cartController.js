@@ -5,7 +5,8 @@ const User = require('../models/Users');
 // Add item to cart
 const addToCart = async (req, res) => {
   try {
-    const { mangaId, quantity } = req.body;
+    const { mangaId } = req.body;
+    const quantity = req.body.quantity || 1;
     const { id } = req.headers;
 
     let cart = await Cart.findOne({ user: id });
@@ -16,7 +17,7 @@ const addToCart = async (req, res) => {
         items: [{ manga: mangaId, quantity }],
       });
     } else {
-      const itemIndex = cart.items.findIndex(item => item.manga.toString() === mangaId);
+      const itemIndex = cart.items.findIndex(item => item.manga?.toString() === mangaId);
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity += quantity;
       } else {
@@ -53,26 +54,37 @@ const getCart = async (req, res) => {
 
 // Remove item from cart
 const removeFromCart = async (req, res) => {
-  try {
-    const { mangaId } = req.body;
-    const { id } = req.headers;
+    try {
+      const { mangaId, quantity = 1 } = req.body;
+      const { id } = req.headers;
+  
+      const cart = await Cart.findOne({ user: id });
+  
+      if (!cart) {
+        return res.status(404).json({ message: "Cart not found" });
+      }
+  
+      const itemIndex = cart.items.findIndex(item => item.manga?.toString() === mangaId);
+  
+      if (itemIndex === -1) {
+        return res.status(404).json({ message: "Manga not found in cart" });
+      }
 
-    const cart = await Cart.findOne({ user: id });
-
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      if (cart.items[itemIndex].quantity > quantity) {
+        cart.items[itemIndex].quantity -= quantity;
+      } else {
+        cart.items.splice(itemIndex, 1); // remove item
+      }
+  
+      cart.updatedAt = Date.now();
+      await cart.save();
+  
+      res.status(200).json({ message: "Item updated/removed from cart", cart });
+    } catch (error) {
+      console.error("Remove from cart error:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    cart.items = cart.items.filter(item => item.manga.toString() !== mangaId);
-    cart.updatedAt = Date.now();
-    await cart.save();
-
-    res.status(200).json({ message: "Item removed", cart });
-  } catch (error) {
-    console.error("Remove from cart error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+  };
 
 module.exports = {
   addToCart,

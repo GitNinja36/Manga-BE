@@ -36,9 +36,7 @@ const addReview = async (req, res) => {
 const getReviews = async (req, res) => {
   try {
     const { mangaId } = req.params;
-
     const reviews = await Review.find({ manga: mangaId }).populate("user", "username avatar");
-
     res.status(200).json(reviews);
   } catch (error) {
     console.error("Get reviews error:", error);

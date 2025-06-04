@@ -13,14 +13,12 @@ const router = express.Router();
 router.post("/place", authenticateToken, placeOrder);
 
 // Get all orders of the logged-in user
-router.get("/my-orders", authenticateToken, getUserOrders);
+router.get("/my", authenticateToken, getUserOrders);
 
-// Admin: Get all orders
-// Add admin auth middleware if needed
+// Get all orders
 router.get("/all", getAllOrders); 
 
-// Admin: Update order status
-// Add admin auth middleware if needed
-router.put("/update-status", updateOrderStatus); 
+//Update order status
+router.put("/update/:id", updateOrderStatus); 
 
 module.exports = router;
