@@ -1,10 +1,13 @@
 const express = require("express");
-const { addBook, updateBook, deleteBook, getBook, getRecentBook, getBookId } = require("../controllers/bookController");
+const { addBook, updateBook, deleteBook, getBook, getRecentBook, getBookId, addBulkManga } = require("../controllers/bookController");
 const { authenticateToken } = require("../middlewares/UserAuth");
 const router = express.Router();
 
 //add new book
 router.post("/add",authenticateToken, addBook);
+
+// Add book in bulk
+router.post('/add-bulk', addBulkManga);
 
 //update new book
 router.put("/update",authenticateToken, updateBook);

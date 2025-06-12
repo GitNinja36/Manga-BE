@@ -1,6 +1,6 @@
+const mongoose = require('mongoose'); 
 const User = require('../models/Users');
 const Books = require('../models/Books');
-
 //add book
 const addBook = async (req, res) =>{
     try {
@@ -26,6 +26,30 @@ const addBook = async (req, res) =>{
         res.status(500).json({message:"Internal Server Error"});
     }
 }
+
+//bulk manga store
+const addBulkManga = async (req, res) => {
+    try {
+      const { mangas } = req.body;
+      if (!Array.isArray(mangas) || mangas.length === 0) {
+        return res.status(400).json({ message: "No manga data provided" });
+      }
+      const adminId = new mongoose.Types.ObjectId("683de6d36c3e5a4bc2832825");
+  
+      const mangasWithSellerId = mangas.map(manga => ({
+        ...manga,
+        seller: adminId,
+      }));
+      const insertedMangas = await Books.insertMany(mangasWithSellerId);
+      res.status(201).json({
+        message: "Bulk manga inserted successfully",
+        data: insertedMangas,
+      });
+    } catch (error) {
+      console.error("Error inserting bulk manga:", error);
+      res.status(500).json({ message: "Failed to insert bulk manga" });
+    }
+};
 
 // update book
 const updateBook = async (req, res) =>{
@@ -68,15 +92,24 @@ const deleteBook = async (req, res) =>{
 // get book
 const getBook = async (req, res) =>{
     try {
-        const books = await Books.find().sort({createdAt : -1});
-        return res.json({
-            status : "Success",
-            data : books,
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+    
+        const skip = (page - 1) * limit;
+    
+        const books = await Books.find().skip(skip).limit(limit);
+        const total = await Books.countDocuments();
+    
+        res.status(200).json({
+          success: true,
+          data: books,
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
         });
-    } catch (error) {
-        res.status(500).json({message:"Internal Server Error"});
-        console.log(error);
-    }
+      } catch (error) {
+        res.status(500).json({ success: false, message: "Failed to fetch books" });
+      }
 }
 
 // get recent book
@@ -115,5 +148,6 @@ module.exports = {
     deleteBook,
     getBook,
     getRecentBook,
-    getBookId
+    getBookId,
+    addBulkManga
 };

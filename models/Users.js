@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   cart:[
     {
       type : mongoose.Types.ObjectId,
-      ref : "books",
+      ref : "Books",
     }
   ],
   createdAt: { 
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   orders: [
     {
       type : mongoose.Types.ObjectId,
-      ref : "order",
+      ref : "Order",
     },
   ],
 });
