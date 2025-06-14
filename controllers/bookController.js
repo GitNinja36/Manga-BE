@@ -92,25 +92,38 @@ const deleteBook = async (req, res) =>{
 // get book
 const getBook = async (req, res) =>{
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 12;
-    
-        const skip = (page - 1) * limit;
-    
-        const books = await Books.find().skip(skip).limit(limit);
-        const total = await Books.countDocuments();
-    
-        res.status(200).json({
-          success: true,
-          data: books,
-          currentPage: page,
-          totalPages: Math.ceil(total / limit),
-          totalItems: total,
-        });
-      } catch (error) {
-        res.status(500).json({ success: false, message: "Failed to fetch books" });
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 8; // 4 cols x 2 rows = 8
+      const search = req.query.search || "";
+      const genre = req.query.genre;
+  
+      const query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      };
+  
+      if (genre) {
+        query.genre = genre;
       }
-}
+  
+      const skip = (page - 1) * limit;
+      const books = await Books.find(query).skip(skip).limit(limit);
+      const total = await Books.countDocuments(query);
+  
+      res.status(200).json({
+        success: true,
+        data: books,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+      });
+    } catch (error) {
+      console.error("Error in getAllBooksPaginated:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch books" });
+    }
+  };
 
 // get recent book
 const getRecentBook = async (req, res) =>{

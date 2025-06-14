@@ -16,12 +16,12 @@ router.put("/update",authenticateToken, updateBook);
 router.delete("/delete", authenticateToken, deleteBook);
 
 //get all book
-router.get("/all", authenticateToken, getBook);
+router.get("/all", getBook);
 
 //get recently added books 5
-router.get("/recent/:limit", authenticateToken, getRecentBook);
+router.get("/recent/:limit", getRecentBook);
 
 //get book by id
-router.get("/:id", authenticateToken, getBookId);
+router.get("/:id", getBookId);
 
 module.exports = router;

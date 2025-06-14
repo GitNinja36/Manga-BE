@@ -44,7 +44,21 @@ const getReviews = async (req, res) => {
   }
 };
 
+// Get all reviews 
+const getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({})
+      .populate('user', 'username avatar')
+      .populate('manga', 'title coverImage');
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error('Get all reviews error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   addReview,
   getReviews,
+  getAllReviews
 };
