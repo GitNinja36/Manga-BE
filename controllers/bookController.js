@@ -6,9 +6,9 @@ const addBook = async (req, res) =>{
     try {
         const {id} =req.headers;
         const user = await User.findById(id);
-        if(user.role !== "seller"){
-            res.status(500).json({message:"You dont have access to add new book"});
-        }
+        // if(user.role !== "seller"){
+        //     res.status(500).json({message:"You dont have access to add new book"});
+        // }
         const book = new Books({
             url : req.body.url,
             title : req.body.title,
@@ -123,7 +123,25 @@ const getBook = async (req, res) =>{
       console.error("Error in getAllBooksPaginated:", error);
       res.status(500).json({ success: false, message: "Failed to fetch books" });
     }
-  };
+};
+
+// get randome book
+const getRandomBook = async (req, res) => {
+    try {
+      const count = await Books.countDocuments();
+      const randomIndex = Math.floor(Math.random() * count);
+      const randomBook = await Books.findOne().skip(randomIndex);
+  
+      if (!randomBook) {
+        return res.status(404).json({ message: "No books found." });
+      }
+  
+      res.status(200).json(randomBook);
+    } catch (error) {
+      console.error("Error fetching random book:", error);
+      res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};  
 
 // get recent book
 const getRecentBook = async (req, res) =>{
@@ -162,5 +180,6 @@ module.exports = {
     getBook,
     getRecentBook,
     getBookId,
-    addBulkManga
+    addBulkManga,
+    getRandomBook
 };

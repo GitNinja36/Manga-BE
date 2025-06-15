@@ -1,5 +1,15 @@
 const express = require("express");
-const { addBook, updateBook, deleteBook, getBook, getRecentBook, getBookId, addBulkManga } = require("../controllers/bookController");
+const { 
+    addBook,
+    updateBook, 
+    deleteBook, 
+    getBook, 
+    getRecentBook, 
+    getBookId, 
+    addBulkManga, 
+    getRandomBook 
+    } = require("../controllers/bookController");
+
 const { authenticateToken } = require("../middlewares/UserAuth");
 const router = express.Router();
 
@@ -23,5 +33,8 @@ router.get("/recent/:limit", getRecentBook);
 
 //get book by id
 router.get("/:id", getBookId);
+
+//get randome
+router.get("/random", getRandomBook);
 
 module.exports = router;
