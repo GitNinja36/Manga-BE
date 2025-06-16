@@ -40,16 +40,25 @@ const getCart = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  const cartItems = await Cart.find({ userId: req.user.id }).skip(skip).limit(limit);
-  const total = await Cart.countDocuments({ userId: req.user.id });
+  try {
+    const cartItems = await Cart.find({ user: req.user.id })
+      .populate('items.manga')
+      .skip(skip)
+      .limit(limit);
 
-  res.status(200).json({
-    success: true,
-    data: cartItems,
-    currentPage: page,
-    totalPages: Math.ceil(total / limit),
-    totalItems: total,
-  });
+    const total = await Cart.countDocuments({ user: req.user.id });
+
+    res.status(200).json({
+      success: true,
+      data: cartItems.length > 0 ? cartItems[0].items : [],
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+    });
+  } catch (error) {
+    console.error("Get cart error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 // Remove item from cart
