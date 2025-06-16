@@ -2,6 +2,7 @@ const Cart = require('../models/Cart');
 const Books = require('../models/Books');
 const User = require('../models/Users');
 
+
 // Add item to cart
 const addToCart = async (req, res) => {
   try {
@@ -27,6 +28,10 @@ const addToCart = async (req, res) => {
 
     cart.updatedAt = Date.now();
     await cart.save();
+    await User.findByIdAndUpdate(id, {
+      $addToSet: { cart: mangaId },
+    });
+
     res.status(200).json({ message: "Item added to cart", cart });
   } catch (error) {
     console.error("Add to cart error:", error);

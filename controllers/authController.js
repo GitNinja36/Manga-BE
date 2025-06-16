@@ -95,7 +95,7 @@ const signInController = async (req, res) => {
 const getUserInfo = async (req, res) =>{
     try {
         const {id} =req.headers;
-        const data = await User.findById(id).select('-password');
+        const data = await User.findById(id).select('-password').populate('cart');
         return res.status(200).json(data);
     } catch (error) {
         console.error("Login error:", error);
