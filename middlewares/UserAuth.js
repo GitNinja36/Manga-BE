@@ -7,14 +7,15 @@ const authenticateToken = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ message: "Authentication token required" });
     }
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_TOKEN);
 
-    jwt.verify(token, process.env.SECRET_TOKEN, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: "Token expired. Please login again" });
-        }
-        req.user = user;
-        next();
-    });
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error('JWT verification failed:', err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 };
 
 module.exports = { authenticateToken };

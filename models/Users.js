@@ -16,21 +16,32 @@ const userSchema = new mongoose.Schema({
     zip: String,
     country: String,
   },
-  cart:[
+  cart: [
     {
-      type : mongoose.Types.ObjectId,
-      ref : "Books",
+      manga: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Books",
+      },
+      quantity: { type: Number, default: 1 }
+    },
+  ],
+  orders: [
+    {
+      items: [
+        {
+          bookId: { type: mongoose.Schema.Types.ObjectId, ref: 'Books' },
+          quantity: Number,
+          price: Number,
+        },
+      ],
+      amount: Number,
+      paymentIntentId: String,
+      date: { type: Date, default: Date.now },
     }
   ],
   createdAt: { 
     type: Date, default: Date.now 
   },
-  orders: [
-    {
-      type : mongoose.Types.ObjectId,
-      ref : "Order",
-    },
-  ],
 });
 
 module.exports = mongoose.model('User', userSchema);

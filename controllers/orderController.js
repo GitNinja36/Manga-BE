@@ -39,6 +39,45 @@ const placeOrder = async (req, res) => {
   }
 };
 
+//direct buy
+const placeDirectOrder = async (req, res) => {
+  try {
+    const { directBuy, qty, amount, paymentIntentId } = req.body;
+    const userId = req.user.id;
+
+    if (!directBuy || !qty || !amount || !paymentIntentId) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
+
+    const user = await User.findById(userId);
+
+    const book = await Books.findById(directBuy);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    const orderItem = {
+      bookId: book._id,
+      quantity: qty,
+      price: book.price,
+    };
+
+    const newOrder = {
+      items: [orderItem],
+      amount,
+      paymentIntentId,
+      date: new Date(),
+    };
+
+    user.orders.push(newOrder);
+    await user.save();
+
+    return res.status(200).json({ message: "Direct order placed", order: newOrder });
+  } catch (err) {
+    console.error("Error placing direct order:", err);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
 // Get all orders of a user
 const getUserOrders = async (req, res) => {
   try {
@@ -98,9 +137,47 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const moveCartToOrders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { paymentIntentId, amount } = req.body;
+    const cart = await Cart.findOne({ user: userId }).populate("items.manga");
+    if (!cart || !cart.items || cart.items.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    const orderItems = cart.items.map(item => ({
+      bookId: item.manga._id,
+      quantity: item.quantity,
+      price: item.manga.price,
+    }));
+
+    const newOrder = {
+      items: orderItems,
+      amount,
+      paymentIntentId,
+      date: new Date(),
+    };
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.orders.push(newOrder);
+    user.cart = [];
+    await user.save();
+
+    res.status(200).json({ message: "Order placed successfully", order: newOrder });
+  } catch (err) {
+    console.error("Error moving cart to orders:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   placeOrder,
   getUserOrders,
   getAllOrders,
   updateOrderStatus,
+  moveCartToOrders,
+  placeDirectOrder
 };

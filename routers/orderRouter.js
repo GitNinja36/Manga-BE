@@ -4,6 +4,8 @@ const {
   getUserOrders,
   getAllOrders,
   updateOrderStatus,
+  moveCartToOrders,
+  placeDirectOrder
 } = require("../controllers/orderController");
 const { authenticateToken } = require("../middlewares/UserAuth");
 
@@ -20,5 +22,9 @@ router.get("/all", getAllOrders);
 
 //Update order status
 router.put("/update/:id", updateOrderStatus); 
+
+router.post("/place-order", authenticateToken, moveCartToOrders);
+
+router.post("/direct-buy", authenticateToken, placeDirectOrder); 
 
 module.exports = router;
